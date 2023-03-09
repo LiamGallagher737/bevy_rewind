@@ -17,7 +17,7 @@
 //! # Setup
 //!
 //! Add the plugin to your app
-//! ```ignore
+//! ```text
 //! .add_plugin(RewindPlugin::default())
 //! ```
 //!
@@ -37,7 +37,7 @@
 //!
 //! To track a components value add the `RewindComponent<C>` to the entity with C being the component you want to track, in this example the entities `Transform` will be tracked for rewinding.
 //!
-//! ```ignore
+//! ```text
 //! # use bevy::prelude::*;
 //! # use bevy_rewind::*;
 //! commands.spawn((
@@ -64,15 +64,21 @@ use bevy::prelude::*;
 /// Add this to your app for the ability to rewind
 pub struct RewindPlugin {
     /// The max number of captures per component before they start being cleared
+    ///
     /// Default is 300 for 5 seconds of replay (60 ticks per seconds * 5 seconds)
     pub max_capture_count: usize,
+    /// Stop rewinding if ***any*** [`RewindComponent`] has run out of history
+    ///
+    /// Default is false
+    pub cancel_rewind_on_empty_history: bool,
 }
 
 impl Plugin for RewindPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(Rewind {
-            max_capture_count: self.max_capture_count,
             rewinding: false,
+            max_capture_count: self.max_capture_count,
+            cancel_rewind_on_empty_history: self.cancel_rewind_on_empty_history,
         });
         app.init_rewind_component::<Transform>();
         app.init_rewind_component::<GlobalTransform>();
@@ -83,6 +89,7 @@ impl Default for RewindPlugin {
     fn default() -> Self {
         Self {
             max_capture_count: 300,
+            cancel_rewind_on_empty_history: false,
         }
     }
 }
@@ -110,10 +117,12 @@ impl RewindAppExtentions for App {
 /// Control the current rewind status
 #[derive(Resource)]
 pub struct Rewind {
-    /// The max number of captures per component before they start being cleared
-    pub max_capture_count: usize,
     /// Set to true to start rewinding
     pub rewinding: bool,
+    /// The max number of captures per component before they start being cleared
+    pub max_capture_count: usize,
+    /// Stop rewinding if ***any*** [`RewindComponent`] has run out of history
+    pub cancel_rewind_on_empty_history: bool,
 }
 
 /// Add this component to any entity to track it for rewinding, the generic value is the component you want to track
@@ -139,10 +148,15 @@ fn capture_components<C: Component + Clone>(
     }
 }
 
-fn rewind_components<C: Component + Clone>(mut query: Query<(&mut C, &mut RewindComponent<C>)>) {
-    for (mut component, mut rewind) in &mut query {
-        if let Some(old_value) = rewind.history.pop() {
+fn rewind_components<C: Component + Clone>(
+    mut query: Query<(&mut C, &mut RewindComponent<C>)>,
+    mut rewind: ResMut<Rewind>,
+) {
+    for (mut component, mut rewind_component) in &mut query {
+        if let Some(old_value) = rewind_component.history.pop() {
             *component = old_value;
+        } else if rewind.cancel_rewind_on_empty_history {
+            rewind.rewinding = false;
         }
     }
 }

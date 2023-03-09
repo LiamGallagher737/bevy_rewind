@@ -25,7 +25,10 @@ fn main() {
         .add_system(disable_rigidbodies.run_if(rewinding))
 
         // Add the rewind plugin
-        .add_plugin(RewindPlugin::default())
+        .add_plugin(RewindPlugin {
+            cancel_rewind_on_empty_history: true,
+            ..Default::default()
+        })
 
         // Add rewind surport for Velocity component
         .init_rewind_component::<Velocity>()
@@ -87,7 +90,11 @@ fn setup(
 // Systems needed for the demo
 
 fn enable_rewinding(mut rewind: ResMut<Rewind>, keys: Res<Input<KeyCode>>) {
-    rewind.rewinding = keys.pressed(KeyCode::Space);
+    if keys.just_pressed(KeyCode::Space) {
+        rewind.rewinding = true;
+    } else if keys.just_released(KeyCode::Space) {
+        rewind.rewinding = false;
+    }
 }
 
 fn enable_rigidbodies(mut query: Query<&mut RigidBody>) {
