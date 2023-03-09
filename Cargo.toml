@@ -1,19 +1,18 @@
 [package]
-name = "bevy_XXX"
+name = "bevy_rewind"
 description = "My amazing bevy crate"
 version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0" # UPDATE IF USING DIFFERENT LICENSE
-repository = "https://github.com/ YourUsername / bevy_XXX"
+repository = "https://github.com/LiamGallagher737/bevy_rewind"
 readme = "README.md"
 keywords = ["bevy"]
 exclude = [".github/"]
 
 [dependencies]
-# It's a good idea to disable Bevy features you are not using, this can dramaticly improve build times and decrese your crate size
-# https://github.com/bevyengine/bevy/blob/main/docs/plugins_guidelines.md#small-crate-size
 bevy = "0.10"
 
 # Used in examples
 [dev-dependencies]
 bevy = "0.10"
+bevy_rapier3d = "0.21"

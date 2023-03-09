@@ -1,18 +1,14 @@
 <div align="center">
 
-# Bevy XXX 
+# Bevy Rewind 
 
-*Description*
+A plugin for easily rewinding time in [Bevy](https://github.com/bevyengine/bevy)
 
-<!-- Find and replace all `YourGithubUser` with your GitHub username -->
-<!-- Find and replace all `bevy_XXX` with your crate name, make sure to use underscores and not spaces -->
-
-<!-- Replace `released%20version` with `main` if you plan to track the main branch aas much as you can -->
 [<img alt="bevy tracking" src="https://img.shields.io/badge/Bevy%20tracking-released%20version-lightblue?style=for-the-badge" height="24">](https://github.com/bevyengine/bevy/blob/main/docs/plugins_guidelines.md#main-branch-tracking)
-[<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/YourGithubUser/bevy_XXX/rust.yml?branch=main&style=for-the-badge" height="24">](https://github.com/YourGithubUser/bevy_XXX/actions)
-[<img alt="github" src="https://img.shields.io/badge/github-bevy_XXX-8da0cb?style=for-the-badge&labelColor=555555&logo=github" height="24">](https://github.com/YourGithubUser/bevy_XXX)
-[<img alt="crates.io" src="https://img.shields.io/crates/v/bevy_XXX.svg?style=for-the-badge&color=fc8d62&logo=rust" height="24">](https://crates.io/crates/bevy_XXX)
-[<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-bevy_XXX-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs" height="24">](https://docs.rs/bevy_XXX)
+[<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/LiamGallagher737/bevy_rewind/rust.yml?branch=main&style=for-the-badge" height="24">](https://github.com/LiamGallagher737/bevy_rewind/actions)
+[<img alt="github" src="https://img.shields.io/badge/github-bevy_rewind-8da0cb?style=for-the-badge&labelColor=555555&logo=github" height="24">](https://github.com/LiamGallagher737/bevy_rewind)
+[<img alt="crates.io" src="https://img.shields.io/crates/v/bevy_rewind.svg?style=for-the-badge&color=fc8d62&logo=rust" height="24">](https://crates.io/crates/bevy_rewind)
+[<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-bevy_rewind-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs" height="24">](https://docs.rs/bevy_rewind)
 
 </div>
 
@@ -20,37 +16,33 @@
 
 # [Demo](examples/demo.rs)
 
-*Description of my amazing demo*
+Demo of rewinding using bevy_rapier
 
 ```console
 cargo run --example demo 
 ```
 
 <div align="center">
-    <img src="examples/images/demo.png" alt="Screenshot of Demo Example" width="600" />
+    <img src="examples/images/demo.gif" alt="Gif of Demo Example" width="600" />
 </div>
 
 
 
 # Setup
 
-Import the prelude
-
-```rust
-use bevy_XXX::prelude::*;
-```
-
 Add the plugin to your app
 ```rust
-.add_plugin(MyAmazingPlugin)
+.add_plugin(RewindPlugin::default())
 ```
 
 Config Options
 
 ```rust
-MyAmazingPlugin {
-    option_1: f32, // How fast you want your app to run
-    option_2: bool, // Should your app crash randomly
+RewindPlugin {
+    // How many captures will take place before they start clearing,
+    // default is 300 for 5 seconds of replay.
+    // (60 ticks per seconds * 5 seconds)
+    max_capture_count: usize, 
 }
 ```
 
@@ -58,19 +50,34 @@ MyAmazingPlugin {
 
 # Usage
 
-***Explain some basic usage of your crate, components, system sets, etc.***
+To track a components value add the `RewindComponent<C>` to the entity with C being the component you want to track, in this example the entities `Transform` will be tracked for rewinding.
+
+```rust
+commands.spawn((
+    PbrBundle::default(),
+    RewindComponent::<Transform>::default(),
+));
+```
+
+By default on `Transform` and `GlobalTransform` can be tracked, to add mode use the `init_rewind_component<C>` method on your app where C is the component you want to be able to track.
+
+```rust
+App::new()
+    .add_plugin(RewindPlugin)
+    .init_rewind_component::<Velocity>()
+    .run();
+```
 
 
 
 # Bevy Tracking
 
-|Bevy|bevy_XXX|
+|Bevy|bevy_rewind|
 |---|---|
 |0.10|0.1.0|
 
 
 
-<!-- REMOVE THIS IF YOU USE A DIFFERENT LICENSE -->
 # License
 
 All code in this repository is dual-licensed under either:
