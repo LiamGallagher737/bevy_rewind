@@ -16,7 +16,7 @@ A plugin for easily rewinding time in [Bevy](https://github.com/bevyengine/bevy)
 
 # [Demo](examples/demo.rs)
 
-Demo of rewinding using bevy_rapier, hold <kbd>Space</kbd> to rewind.
+Demo of rewinding using bevy_rapier, tap <kbd>Space</kbd> to toggle rewinding
 
 ```console
 cargo run --example demo 
@@ -42,7 +42,9 @@ RewindPlugin {
     // How many captures will take place before they start clearing,
     // default is 300 for 5 seconds of replay.
     // (60 ticks per seconds * 5 seconds)
-    max_capture_count: usize, 
+    max_capture_count: 300,
+    // If the game should stop rewinding once any of the components has run out of history.
+    cancel_on_empty_history: false, 
 }
 ```
 
@@ -59,7 +61,7 @@ commands.spawn((
 ));
 ```
 
-By default on `Transform` and `GlobalTransform` can be tracked, to add mode use the `init_rewind_component<C>` method on your app where C is the component you want to be able to track.
+By default only `Transform` and `GlobalTransform` components can be tracked, to add support for more use the `init_rewind_component<C>` method on your app where C is the component you want to be able to track.
 
 ```rust
 App::new()

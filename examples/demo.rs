@@ -5,7 +5,7 @@ use bevy_rewind::*;
 #[rustfmt::skip]
 fn main() {
     println!();
-    println!("Hold the Space key to rewind");
+    println!("Hold the Space key to toggle rewinding");
     println!();
 
     App::new()
@@ -16,7 +16,7 @@ fn main() {
         .add_system(setup.on_startup())
 
         // Enable rewind when holding the space key
-        .add_system(enable_rewinding)
+        .add_system(toggle_rewinding)
 
         // Enable rigidbodies when bot rewinding
         .add_system(enable_rigidbodies.run_if(not(rewinding)))
@@ -25,10 +25,7 @@ fn main() {
         .add_system(disable_rigidbodies.run_if(rewinding))
 
         // Add the rewind plugin
-        .add_plugin(RewindPlugin {
-            cancel_rewind_on_empty_history: true,
-            ..Default::default()
-        })
+        .add_plugin(RewindPlugin::new(300, true))
 
         // Add rewind surport for Velocity component
         .init_rewind_component::<Velocity>()
@@ -89,11 +86,9 @@ fn setup(
 
 // Systems needed for the demo
 
-fn enable_rewinding(mut rewind: ResMut<Rewind>, keys: Res<Input<KeyCode>>) {
+fn toggle_rewinding(mut rewinding: ResMut<Rewinding>, keys: Res<Input<KeyCode>>) {
     if keys.just_pressed(KeyCode::Space) {
-        rewind.rewinding = true;
-    } else if keys.just_released(KeyCode::Space) {
-        rewind.rewinding = false;
+        **rewinding = !**rewinding;
     }
 }
 
