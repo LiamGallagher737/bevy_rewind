@@ -4,6 +4,10 @@ use bevy_rewind::*;
 
 #[rustfmt::skip]
 fn main() {
+    println!();
+    println!("Hold the Space key to rewind");
+    println!();
+
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())

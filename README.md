@@ -16,7 +16,7 @@ A plugin for easily rewinding time in [Bevy](https://github.com/bevyengine/bevy)
 
 # [Demo](examples/demo.rs)
 
-Demo of rewinding using bevy_rapier
+Demo of rewinding using bevy_rapier, hold <kbd>Space</kbd> to rewind.
 
 ```console
 cargo run --example demo 
